@@ -1,6 +1,6 @@
 import logging
 import os
-from datetime import date
+from datetime import datetime
 
 import azure.functions as func
 
@@ -15,7 +15,7 @@ def monday_timer_trigger(myTimer: func.TimerRequest) -> None:
         logging.info('The timer is past due!')
 
     webhook_utl = os.environ["WEBHOOK_URL"]
-    message = f'Hello, world! Today is {date.today()}'
+    message = f'Hello, world :sonic-running: Today is {datetime.now()}'
     post_slack_message(webhook_utl, message)
 
     logging.info('Python timer trigger function executed with the message: {message}')
