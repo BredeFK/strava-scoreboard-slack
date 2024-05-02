@@ -9,8 +9,7 @@ from slack import post_slack_message
 app = func.FunctionApp()
 
 
-@app.schedule(schedule="0 0 6-14 * * *", arg_name="myTimer", run_on_startup=True,
-              use_monitor=False)
+@app.schedule(schedule="0 0 6-14 * * *", arg_name="myTimer", run_on_startup=False, use_monitor=True)
 def monday_timer_trigger(myTimer: func.TimerRequest) -> None:
     if myTimer.past_due:
         logging.info('The timer is past due!')
