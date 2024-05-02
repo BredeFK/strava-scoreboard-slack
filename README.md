@@ -1,1 +1,1 @@
-# strava-scoreboard-slack
+# Strava Scoreboard Slack
