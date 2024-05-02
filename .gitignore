@@ -135,4 +135,14 @@ __azurite_db*__.json
 .python_packages
 
 *.iml
+
+### .idea/.gitignore
+# Default ignored files
+.idea/shelf/
 .idea/sonarlint/
+.idea/workspace.xml
+# Editor-based HTTP Client requests
+.idea/httpRequests/
+# Datasource local storage ignored files
+.idea/dataSources/
+.idea/dataSources.local.xml
