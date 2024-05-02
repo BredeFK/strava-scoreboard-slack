@@ -4,7 +4,7 @@ from selenium.webdriver.common.by import By
 
 
 # Inspired from https://github.com/mbsmebye/StravaScraper
-def get_last_weeks_leaderboard(strava_url):
+def get_last_weeks_leaderboard():
     user_agent = (
         'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.50 Safari/537.36'
     )
@@ -13,7 +13,7 @@ def get_last_weeks_leaderboard(strava_url):
     options.add_argument(f'user-agent={user_agent}')
 
     driver = webdriver.Chrome(options=options)
-    driver.get(strava_url)
+    driver.get('https://www.strava.com/clubs/526085')
     driver.find_element(By.XPATH, '//*[@class="button last-week"]').click()
 
     table = driver.find_element(By.XPATH, '//*[@class="dense striped sortable"]')

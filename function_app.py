@@ -4,20 +4,24 @@ from datetime import datetime
 
 import azure.functions as func
 
-from slack import post_slack_message
+from strava import get_last_weeks_leaderboard
+from slack import format_message, post_slack_message
 
 app = func.FunctionApp()
 
 
 def start_bot():
-    webhook_utl = os.environ["WEBHOOK_URL"]
-    message = f'Hello, world :sonic-running: Today is {datetime.now()}'
-    post_slack_message(webhook_utl, message)
+    webhook_url = os.environ["WEBHOOK_URL"]
 
-    logging.info('Python timer trigger function executed with the message: {message}')
+    athletes = get_last_weeks_leaderboard()
+    message = format_message(athletes)
+    post_slack_message(webhook_url, message)
+
+    logging.info(f'Python timer trigger function executed. The leaderboard had {len(athletes)} athletes')
 
 
-@app.schedule(schedule="0 0 6-14 * * *", arg_name="myTimer", run_on_startup=False, use_monitor=True)
+# Every Monday at 09:00, aka 11:00 in Norwegian time
+@app.schedule(schedule="0 0 9 * * Mon", arg_name="myTimer", run_on_startup=False, use_monitor=True)
 def monday_timer_trigger(myTimer: func.TimerRequest) -> None:
     time_now = datetime.now()
     if myTimer.past_due:
