@@ -43,17 +43,23 @@ def format_message(athletes):
     if len(athletes) != 0:
         for athlete in athletes:
             placement = get_placement_emoji(athlete["rank"])
+
             longest_run = athlete["longest_run"]
             distance = longest_run.split(" km")[0]
             if float(distance) < 10.0:
                 longest_run = f'  {longest_run}'
+
+            activities_text = 'økter'
+            if athlete["number_of_runs"] == 1:
+                activities_text = 'økt'
+
             section_athlete = {
                 "type": "section",
                 "fields": [
                     {
                         "type": "mrkdwn",
                         "text": f'{placement} {athlete["user_name"]}: *{athlete["total_distance"]}* '
-                                f'({athlete["number_of_runs"]} økter)'
+                                f'({athlete["number_of_runs"]} {activities_text})'
                     },
                     {
                         "type": "mrkdwn",
