@@ -34,7 +34,8 @@ def monday_timer_trigger(myTimer: func.TimerRequest) -> None:
 @app.route(route="force_monday_timer_trigger", auth_level=func.AuthLevel.ADMIN)
 def force_monday_timer_trigger(req: func.HttpRequest) -> func.HttpResponse:
     time_now = datetime.now()
-    is_test = req.route_params.get("test", default=True)
+
+    is_test = req.params.get('test')
     url = os.environ["WEBHOOK_URL_TEST"]
     if is_test:
         logging.info(f'Python HTTP trigger function processed a test-request @ {time_now}')
