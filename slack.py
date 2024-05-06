@@ -58,7 +58,7 @@ def format_message(athletes):
                 "fields": [
                     {
                         "type": "mrkdwn",
-                        "text": f'{placement} {athlete["user_name"]}: *{athlete["total_distance"]}* '
+                        "text": f'{placement} {athlete["athlete_name"]}: *{athlete["total_distance"]}* '
                                 f'({athlete["number_of_runs"]} {activities_text})'
                     },
                     {

@@ -4,15 +4,13 @@ from datetime import datetime
 
 import azure.functions as func
 
-from strava import get_last_weeks_leaderboard
 from slack import format_message, post_slack_message
+from strava import get_last_weeks_leaderboard
 
 app = func.FunctionApp()
 
 
-def start_bot():
-    webhook_url = os.environ["WEBHOOK_URL"]
-
+def start_bot(webhook_url):
     athletes = get_last_weeks_leaderboard()
     message = format_message(athletes)
     post_slack_message(webhook_url, message)
@@ -29,14 +27,21 @@ def monday_timer_trigger(myTimer: func.TimerRequest) -> None:
     else:
         logging.info(f'The timer is on time @ {time_now}')
 
-    start_bot()
+    url = os.environ["WEBHOOK_URL"]
+    start_bot(url)
 
 
 @app.route(route="force_monday_timer_trigger", auth_level=func.AuthLevel.ADMIN)
 def force_monday_timer_trigger(req: func.HttpRequest) -> func.HttpResponse:
     time_now = datetime.now()
-    logging.info(f'Python HTTP trigger function processed a request @ {time_now}')
+    is_test = req.route_params.get("test", default=True)
+    url = os.environ["WEBHOOK_URL_TEST"]
+    if is_test:
+        logging.info(f'Python HTTP trigger function processed a test-request @ {time_now}')
+    else:
+        logging.info(f'Python HTTP trigger function processed a request @ {time_now}')
+        url = os.environ["WEBHOOK_URL"]
 
-    start_bot()
+    start_bot(url)
 
     return func.HttpResponse(f'Python timer trigger function executed @ {time_now}')
