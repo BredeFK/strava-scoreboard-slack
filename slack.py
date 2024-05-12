@@ -14,15 +14,17 @@ def post_slack_message(webhook_url, formatted_message):
 
 
 def get_placement_emoji(rank):
+    # number emojis from https://www.flaticon.com/packs/numbers-0-to-100-108
+    #  medal emojis from https://www.flaticon.com/packs/winning-8
     if rank > 30:
         return rank
     match rank:
         case 1:
-            return ':first_place_medal:'
+            return ':first_place_medal_1:'
         case 2:
-            return ':second_place_medal:'
+            return ':second_place_medal_2:'
         case 3:
-            return ':third_place_medal:'
+            return ':third_place_medal_3:'
         case _:
             return f':number-{rank}:'
 
