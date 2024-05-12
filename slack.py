@@ -14,7 +14,7 @@ def post_slack_message(webhook_url, formatted_message):
 
 
 def get_placement_emoji(rank):
-    if rank > 25:
+    if rank > 30:
         return rank
     match rank:
         case 1:
