@@ -4,7 +4,7 @@ from datetime import datetime
 
 import azure.functions as func
 
-from slack import format_message, post_slack_message
+from discord import format_message, post_discord_message
 from strava import get_last_weeks_leaderboard
 
 app = func.FunctionApp()
@@ -13,7 +13,7 @@ app = func.FunctionApp()
 def start_bot(webhook_url):
     athletes = get_last_weeks_leaderboard()
     message = format_message(athletes)
-    post_slack_message(webhook_url, message)
+    post_discord_message(webhook_url, message)
 
     logging.info(f'Python timer trigger function executed. The leaderboard had {len(athletes)} athletes')
 

@@ -18,7 +18,7 @@ def get_webdriver():
 # Inspired from https://github.com/mbsmebye/StravaScraper
 def get_last_weeks_leaderboard():
     driver = get_webdriver()
-    driver.get('https://www.strava.com/clubs/526085')
+    driver.get('https://www.strava.com/clubs/1248911')
     driver.find_element(By.XPATH, '//*[@class="button last-week"]').click()
 
     table = driver.find_element(By.XPATH, '//*[@class="dense striped sortable"]')
