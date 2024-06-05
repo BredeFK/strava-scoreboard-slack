@@ -3,7 +3,7 @@
 # Manually managing azure-functions-worker may cause unexpected issues
 
 azure-functions
-requests~=2.31.0
+requests>=2.32.0
 pip~=23.3
 attrs~=23.2.0
 wheel~=0.41.2
