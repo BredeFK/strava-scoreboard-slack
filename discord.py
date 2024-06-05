@@ -1,6 +1,7 @@
 import json
 
 import requests
+from datetime import datetime
 
 numbers = ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'keycap_ten']
 
@@ -29,15 +30,30 @@ def get_placement_emoji(rank):
             return f':{numbers[rank - 1]}:'
 
 
+def get_color_of_the_week():
+    # https://coolors.co/palette/f94144-f3722c-f8961e-f9844a-f9c74f-90be6d-43aa8b-4d908e-577590-277da1
+    coolors = ['F94144', 'F3722C', 'F8961E', 'F9844A', 'F9C74F',
+               '90BE6D', '43AA8B', '4D908E', '577590', '277DA1']
+
+    current_week = datetime.now().isocalendar()[1]
+
+    # Determine the index for the color
+    color_index = (current_week - 1) % len(coolors)
+
+    return f'#{coolors[color_index]}'
+
+
 def format_message(athletes):
     payload = {
         "username": "The Ginger Pigeons StravaBot",
         "embeds": [
             {
                 "title": "Last weeks leaderboard for The Ginger Pigeons running club :person_running:",
-                "color": 16534530,
-                "description": "*Join our running group :point_right: https://www.strava.com/clubs/ginger-pigeons*",
-                "fields": []
+                "color": get_color_of_the_week(),
+                "fields": [],
+                "footer": {
+                    "text": "Join us @ https://www.strava.com/clubs/ginger-pigeons"
+                }
             }
         ]
     }
