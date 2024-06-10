@@ -1,7 +1,8 @@
 import json
+import logging
+from datetime import datetime
 
 import requests
-from datetime import datetime
 
 numbers = ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'keycap_ten']
 
@@ -11,9 +12,9 @@ def post_discord_message(webhook_url, formatted_message):
                                     data=json.dumps(formatted_message))
 
     if discord_request.status_code == 204:
-        print('Successfully sent discord message')
+        logging.info('Successfully sent discord message')
     else:
-        print(f'Error[{discord_request.status_code}] sending discord message: {discord_request.text}')
+        logging.error(f'Error [{discord_request.status_code}] sending discord message: {discord_request.text}')
 
 
 def get_placement_emoji(rank):
@@ -32,15 +33,15 @@ def get_placement_emoji(rank):
 
 def get_color_of_the_week():
     # https://coolors.co/palette/f94144-f3722c-f8961e-f9844a-f9c74f-90be6d-43aa8b-4d908e-577590-277da1
-    coolors = ['F94144', 'F3722C', 'F8961E', 'F9844A', 'F9C74F',
-               '90BE6D', '43AA8B', '4D908E', '577590', '277DA1']
+    coolors = [16335172, 15954476, 16291358, 16352330, 16369487,
+               9485933, 4434571, 5083278, 5731728, 2588065]
 
     current_week = datetime.now().isocalendar()[1]
 
     # Determine the index for the color
     color_index = (current_week - 1) % len(coolors)
 
-    return f'#{coolors[color_index]}'
+    return coolors[color_index]
 
 
 def format_message(athletes):
