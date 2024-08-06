@@ -1,9 +1,6 @@
-# from selenium import webdriver
-# from selenium.webdriver.chrome.options import Options
-# from selenium.webdriver.common.by import By
 import os.path
 import time
-
+from collections import defaultdict
 import requests
 
 TOKEN_FILE_NAME = 'tokens.txt'
@@ -20,39 +17,90 @@ def get_access_token():
         expires_at = int(lines[0].strip())
         refresh_token = lines[1].strip()
         access_token = lines[2].strip()
-        print(f'{expires_at}\n{refresh_token}\n{access_token}')
         time_now = int(time.time())
         if time_now >= expires_at:
-            print('Accesstoken has expired')
+            print('AccessToken has expired')
+            refresh_token_request = requests.post(url=f'{BASE_URL}/api/v3/oauth/token',
+                                                  params={'client_id': '???',
+                                                          'client_secret': '???',
+                                                          'grant_type': 'refresh_token',
+                                                          'refresh_token': refresh_token})
+            if refresh_token_request.status_code == 200:
+                print('Got new token using refresh token')
+                refresh_token_request_json = refresh_token_request.json()
+                return update_token_file_and_return_access_token(refresh_token_request_json)
+            else:
+                error = refresh_token_request.json()
+                print(f'Could not get new token using refresh token: [{refresh_token_request.status_code}] {error}')
+                return None
         else:
-            print('Accesstoken has not expired')
+            print('Stored accessToken is still valid')
             return access_token
     else:
-        strava_request = requests.post(url=f'{BASE_URL}/oauth/token',
-                                       params={'client_id': '59898',
+        strava_request = requests.post(url=f'{BASE_URL}/api/v3/oauth/token',
+                                       params={'client_id': '???',
                                                'client_secret': '???',
                                                'code': '???',
                                                'grant_type': 'authorization_code'})
 
-        # now:      1722861081
-        # expires:  1722879581
-        print(int(time.time()))
         if strava_request.status_code == 200:
-            json = strava_request.json()
-            file = open(TOKEN_FILE_NAME, 'w')
-            file.write(str(json['expires_at']) + '\n')
-            file.write(json['refresh_token'] + '\n')
-            file.write(json['access_token'])
-            file.close()
+            print('Fetched fresh accessToken')
+            strava_request_json = strava_request.json()
+            return update_token_file_and_return_access_token(strava_request_json)
         else:
             print(f'Something went wrong: {strava_request.status_code}')
             error = strava_request.json()
             print(error)
-        return '123'
+            return None
 
 
-access_token = get_access_token()
-print(access_token)
+def update_token_file_and_return_access_token(json_body):
+    token_file = open(TOKEN_FILE_NAME, 'w')
+    access_token = json_body['access_token']
+    token_file.write(str(json_body['expires_at']) + '\n')
+    token_file.write(json_body['refresh_token'] + '\n')
+    token_file.write(access_token)
+    token_file.close()
+    return access_token
+
+
+def get_club_activities(bearer_token, club_id):
+    club_activities_request = requests.get(url=f'https://www.strava.com/api/v3/clubs/{club_id}/activities',
+                                           headers={'Authorization': f'Bearer {bearer_token}'})
+
+    if club_activities_request.status_code == 200:
+        club_activities_request_json = club_activities_request.json()
+        return parse_club_activities(club_activities_request_json)
+    else:
+        error = club_activities_request.json()
+        print(f'Something went wrong: {club_activities_request.status_code}: {error}')
+        return None
+
+
+def parse_club_activities(club_activities):
+    athlete_distances = defaultdict(float)
+
+    for activity in club_activities:
+        firstname = activity['athlete']['firstname']
+        lastname = activity['athlete']['lastname']
+        full_name = f"{firstname} {lastname}"
+        distance_in_meters = activity['distance']
+
+        athlete_distances[full_name] += distance_in_meters
+
+    return sorted(athlete_distances.items(), key=lambda x: x[1], reverse=True)
+
+
+token = get_access_token()
+if token is not None:
+    leaderboard = get_club_activities(token, 526085)
+    # Print the leaderboard
+    print("Leaderboard based on total distance run:")
+    for rank, (athlete, distance) in enumerate(leaderboard, start=1):
+        distance = distance / 1000
+        print(f"{rank}. {athlete}: {distance:.2f} km")
+else:
+    print('Something went wrong')
 
 # def get_webdriver():
 #     user_agent = (
