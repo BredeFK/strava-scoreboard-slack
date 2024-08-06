@@ -5,10 +5,13 @@ import requests
 
 TOKEN_FILE_NAME = 'tokens.txt'
 BASE_URL = 'https://www.strava.com'
+CLIENT_ID = '???'
+CLIENT_SECRET = '???'
 
 
 # http://www.strava.com/oauth/authorize?client_id=59898&response_type=code&redirect_uri=http://localhost/exchange_token&approval_prompt=force&scope=read
 # https://developers.strava.com/docs/authentication/
+
 
 def get_access_token():
     if os.path.exists(TOKEN_FILE_NAME):
@@ -21,8 +24,8 @@ def get_access_token():
         if time_now >= expires_at:
             print('AccessToken has expired')
             refresh_token_request = requests.post(url=f'{BASE_URL}/api/v3/oauth/token',
-                                                  params={'client_id': '???',
-                                                          'client_secret': '???',
+                                                  params={'client_id': CLIENT_ID,
+                                                          'client_secret': CLIENT_SECRET,
                                                           'grant_type': 'refresh_token',
                                                           'refresh_token': refresh_token})
             if refresh_token_request.status_code == 200:
@@ -38,9 +41,9 @@ def get_access_token():
             return access_token
     else:
         strava_request = requests.post(url=f'{BASE_URL}/api/v3/oauth/token',
-                                       params={'client_id': '???',
-                                               'client_secret': '???',
-                                               'code': '???',
+                                       params={'client_id': CLIENT_ID,
+                                               'client_secret': CLIENT_SECRET,
+                                               'code': '1d444100f5eef9fa866f0d17138e4e874ea93104',
                                                'grant_type': 'authorization_code'})
 
         if strava_request.status_code == 200:
