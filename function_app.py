@@ -11,7 +11,9 @@ app = func.FunctionApp()
 
 
 def start_bot(webhook_url):
-    athletes = get_last_weeks_leaderboard()
+    username = os.environ["STRAVA_USERNAME"]
+    password = os.environ["STRAVA_PASSWORD"]
+    athletes = get_last_weeks_leaderboard(username, password)
     message = format_message(athletes)
     post_slack_message(webhook_url, message)
 
