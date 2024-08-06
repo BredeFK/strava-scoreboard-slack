@@ -11,7 +11,9 @@ app = func.FunctionApp()
 
 
 def start_bot(webhook_url):
-    athletes = get_last_weeks_leaderboard()
+    username = os.environ["STRAVA_USERNAME"]
+    password = os.environ["STRAVA_PASSWORD"]
+    athletes = get_last_weeks_leaderboard(username, password)
     message = format_message(athletes)
     post_discord_message(webhook_url, message)
 
@@ -19,7 +21,7 @@ def start_bot(webhook_url):
 
 
 # Every Monday at 09:00, aka 11:00 in Norwegian time
-@app.timer_trigger(schedule="0 0 9 * * Mon", arg_name="myTimer", run_on_startup=False, use_monitor=True) 
+@app.timer_trigger(schedule="0 0 9 * * Mon", arg_name="myTimer", run_on_startup=False, use_monitor=True)
 def monday_timer_trigger_discord(myTimer: func.TimerRequest) -> None:
     time_now = datetime.now()
     if myTimer.past_due:
@@ -29,4 +31,3 @@ def monday_timer_trigger_discord(myTimer: func.TimerRequest) -> None:
 
     url = os.environ["WEBHOOK_URL"]
     start_bot(url)
-

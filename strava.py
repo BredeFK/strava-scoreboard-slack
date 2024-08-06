@@ -1,6 +1,8 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+import time
 
 
 def get_webdriver():
@@ -15,11 +17,30 @@ def get_webdriver():
     return driver
 
 
+def login_to_strava(driver, username, password):
+    driver.get('https://www.strava.com/login')
+    time.sleep(2)
+
+    email_field = driver.find_element(By.ID, 'email')
+    password_field = driver.find_element(By.ID, 'password')
+
+    email_field.send_keys(username)
+    password_field.send_keys(password)
+
+    password_field.send_keys(Keys.RETURN)
+    time.sleep(5)
+
+
 # Inspired from https://github.com/mbsmebye/StravaScraper
-def get_last_weeks_leaderboard():
+def get_last_weeks_leaderboard(username, password):
     driver = get_webdriver()
+    login_to_strava(driver, username, password)
+
     driver.get('https://www.strava.com/clubs/1248911')
+    time.sleep(5)
+
     driver.find_element(By.XPATH, '//*[@class="button last-week"]').click()
+    time.sleep(2)
 
     table = driver.find_element(By.XPATH, '//*[@class="dense striped sortable"]')
     rows = table.find_elements(By.TAG_NAME, 'tr')
@@ -65,4 +86,5 @@ def update_duplicate_athlete_names(athletes, duplicates):
 def get_full_athlete_name(athlete_id):
     driver = get_webdriver()
     driver.get(f'https://www.strava.com/athletes/{athlete_id}')
+    time.sleep(2)
     return driver.title.split('|')[0].strip()
