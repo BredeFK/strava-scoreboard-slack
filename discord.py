@@ -4,7 +4,9 @@ from datetime import datetime
 
 import requests
 
-numbers = ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'keycap_ten']
+numbers = ['<:number4:1272258897150873730>', '<:number5:1272258898937778268>', '<:number6:1272258900019642490>',
+           '<:number7:1272258901693436046>', '<:number8:1272258903605903360>', '<:number9:1272258904969052241>',
+           '<:number10:1272258939022741698>', '<:number11:1272251988041531452>', '<:number12:1272252049932681301>']
 
 
 def post_discord_message(webhook_url, formatted_message):
@@ -18,17 +20,17 @@ def post_discord_message(webhook_url, formatted_message):
 
 
 def get_placement_emoji(rank):
-    if rank > 10:
+    if rank > 12:
         return f'**{rank}**'
     match rank:
         case 1:
-            return ':first_place:'
+            return '<:first_place_medal_1:1272258655252779189>'
         case 2:
-            return ':second_place:'
+            return '<:second_place_medal_2:1272258653927506034>'
         case 3:
-            return ':third_place:'
+            return '<:third_place_medal_3:1272258652711161947>'
         case _:
-            return f':{numbers[rank - 1]}:'
+            return f'{numbers[rank - 4]}'
 
 
 def get_color_of_the_week():
@@ -49,7 +51,7 @@ def format_message(athletes):
         "username": "The Ginger Pigeons StravaBot",
         "embeds": [
             {
-                "title": "Last weeks leaderboard for The Ginger Pigeons running club :person_running:",
+                "title": "Last weeks leaderboard for The Ginger Pigeons running club <:fall_muscle:772487746627174452>",
                 "color": get_color_of_the_week(),
                 "fields": [],
                 "footer": {

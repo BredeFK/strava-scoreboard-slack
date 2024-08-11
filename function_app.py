@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 from datetime import datetime
@@ -14,6 +15,7 @@ def start_bot(webhook_url):
     username = os.environ["STRAVA_USERNAME"]
     password = os.environ["STRAVA_PASSWORD"]
     athletes = get_last_weeks_leaderboard(username, password)
+    # athletes = json.loads(open('testFile.json', 'r').read()) # For testing purposes :)
     message = format_message(athletes)
     post_discord_message(webhook_url, message)
 
