@@ -1,15 +1,20 @@
 import os.path
 import time
 from collections import defaultdict
+
 import requests
 
 TOKEN_FILE_NAME = 'tokens.txt'
 BASE_URL = 'https://www.strava.com'
-CLIENT_ID = '???'
-CLIENT_SECRET = '???'
+CLIENT_ID = ''
+CLIENT_SECRET = ''
+CLUB_ID = 0
+CODE = ''
+
+print(
+    f'http://www.strava.com/oauth/authorize?client_id={CLUB_ID}&response_type=code&redirect_uri=http://localhost/exchange_token&approval_prompt=force&scope=read')
 
 
-# http://www.strava.com/oauth/authorize?client_id=59898&response_type=code&redirect_uri=http://localhost/exchange_token&approval_prompt=force&scope=read
 # https://developers.strava.com/docs/authentication/
 
 
@@ -43,7 +48,7 @@ def get_access_token():
         strava_request = requests.post(url=f'{BASE_URL}/api/v3/oauth/token',
                                        params={'client_id': CLIENT_ID,
                                                'client_secret': CLIENT_SECRET,
-                                               'code': '1d444100f5eef9fa866f0d17138e4e874ea93104',
+                                               'code': CODE,
                                                'grant_type': 'authorization_code'})
 
         if strava_request.status_code == 200:
@@ -68,12 +73,14 @@ def update_token_file_and_return_access_token(json_body):
 
 
 def get_club_activities(bearer_token, club_id):
-    club_activities_request = requests.get(url=f'https://www.strava.com/api/v3/clubs/{club_id}/activities',
-                                           headers={'Authorization': f'Bearer {bearer_token}'})
+    after_time = 1730678399  # TODO : Change to be dynamic
+
+    club_activities_request = requests.get(
+        url=f'https://www.strava.com/api/v3/clubs/{club_id}/activities?per_page=100&after={after_time}',
+        headers={'Authorization': f'Bearer {bearer_token}'})
 
     if club_activities_request.status_code == 200:
-        club_activities_request_json = club_activities_request.json()
-        return parse_club_activities(club_activities_request_json)
+        return parse_club_activities(club_activities_request.json())
     else:
         error = club_activities_request.json()
         print(f'Something went wrong: {club_activities_request.status_code}: {error}')
@@ -96,12 +103,13 @@ def parse_club_activities(club_activities):
 
 token = get_access_token()
 if token is not None:
-    leaderboard = get_club_activities(token, 526085)
+    leaderboard = get_club_activities(token, CLUB_ID)
     # Print the leaderboard
     print("Leaderboard based on total distance run:")
     for rank, (athlete, distance) in enumerate(leaderboard, start=1):
-        distance = distance / 1000
-        print(f"{rank}. {athlete}: {distance:.2f} km")
+        distance_with_two_decimals = f'{(distance / 1000):.2f}'
+        distance_with_one_decimal = distance_with_two_decimals[:len(distance_with_two_decimals) - 1]
+        print(f"{rank}. {athlete}: {distance_with_one_decimal} km")
 else:
     print('Something went wrong')
 
