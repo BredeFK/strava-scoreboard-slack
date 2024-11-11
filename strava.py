@@ -1,13 +1,15 @@
+import time
+
 from selenium import webdriver
+from selenium.common import NoSuchElementException
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
-import time
 
 
 def get_webdriver():
     user_agent = (
-        'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.50 Safari/537.36'
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36'
     )
     options = Options()
     options.add_argument('--headless=new')
@@ -21,14 +23,17 @@ def login_to_strava(driver, username, password):
     driver.get('https://www.strava.com/login')
     time.sleep(2)
 
-    email_field = driver.find_element(By.ID, 'email')
-    password_field = driver.find_element(By.ID, 'password')
+    try:
+        email_field = driver.find_element(By.ID, 'email')
+        password_field = driver.find_element(By.ID, 'password')
 
-    email_field.send_keys(username)
-    password_field.send_keys(password)
+        email_field.send_keys(username)
+        password_field.send_keys(password)
 
-    password_field.send_keys(Keys.RETURN)
-    time.sleep(5)
+        password_field.send_keys(Keys.RETURN)
+        time.sleep(5)
+    except NoSuchElementException:
+        exit(f'Could not get to login page: Ended up on page titled \"{driver.title}\"')
 
 
 # Inspired from https://github.com/mbsmebye/StravaScraper
