@@ -4,20 +4,29 @@ from datetime import datetime
 
 import azure.functions as func
 
-from slack import format_message, post_slack_message
-from strava import get_last_weeks_leaderboard
+import slack
+import strava
 
 app = func.FunctionApp()
 
 
-def start_bot(webhook_url):
-    username = os.environ["STRAVA_USERNAME"]
-    password = os.environ["STRAVA_PASSWORD"]
-    athletes = get_last_weeks_leaderboard(username, password)
-    message = format_message(athletes)
-    post_slack_message(webhook_url, message)
+# Every Sunday at 21:59, aka 23:59 in Norwegian time
+@app.schedule(schedule="0 59 21 * * SUN", arg_name="myTimer2", run_on_startup=False, use_monitor=True)
+def sunday_timer_trigger(myTimer2: func.TimerRequest) -> None:
+    time_now = datetime.now()
+    if myTimer2.past_due:
+        logging.warning(f'The timer is past due @ {time_now}')
+    else:
+        logging.info(f'The timer is on time @ {time_now}')
 
-    logging.info(f'Python timer trigger function executed. The leaderboard had {len(athletes)} athletes')
+    athletes = strava.get_club_activities(os.environ["TOKEN_FILE_NAME"],
+                                          os.environ["CLIENT_ID"],
+                                          os.environ["CLIENT_SECRET"],
+                                          os.environ["CODE"],
+                                          os.environ["CLUB_ID"])
+    strava.save_athletes_to_file(athletes)
+
+    logging.info(f'Python Sunday timer trigger function executed. The leaderboard had {len(athletes)} athletes')
 
 
 # Every Monday at 09:00, aka 11:00 in Norwegian time
@@ -30,7 +39,12 @@ def monday_timer_trigger(myTimer: func.TimerRequest) -> None:
         logging.info(f'The timer is on time @ {time_now}')
 
     url = os.environ["WEBHOOK_URL"]
-    start_bot(url)
+    athletes = strava.load_athletes_from_file()
+
+    message = slack.format_message(athletes)
+    slack.post_slack_message(url, message)
+
+    logging.info(f'Python Monday timer trigger function executed. The leaderboard had {len(athletes)} athletes')
 
 
 @app.route(route="force_monday_timer_trigger", auth_level=func.AuthLevel.ADMIN)
@@ -45,6 +59,15 @@ def force_monday_timer_trigger(req: func.HttpRequest) -> func.HttpResponse:
         logging.info(f'Python HTTP trigger function processed a request @ {time_now}')
         url = os.environ["WEBHOOK_URL"]
 
-    start_bot(url)
+    athletes = strava.get_club_activities(os.environ["TOKEN_FILE_NAME"],
+                                          os.environ["CLIENT_ID"],
+                                          os.environ["CLIENT_SECRET"],
+                                          os.environ["CODE"],
+                                          os.environ["CLUB_ID"])
+
+    logging.info(f'Python manual trigger function executed. The leaderboard has {len(athletes)} athletes')
+
+    message = slack.format_message(athletes)
+    slack.post_slack_message(url, message)
 
     return func.HttpResponse(f'Python timer trigger function executed @ {time_now}')

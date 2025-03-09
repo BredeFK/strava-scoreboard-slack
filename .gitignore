@@ -146,3 +146,6 @@ __azurite_db*__.json
 # Datasource local storage ignored files
 .idea/dataSources/
 .idea/dataSources.local.xml
+
+tokens.txt
+athletes.json

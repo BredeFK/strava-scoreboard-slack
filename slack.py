@@ -13,9 +13,7 @@ def post_slack_message(webhook_url, formatted_message):
         print(f'Error[{slack_request.status_code}] sending slack message: {slack_request.text}')
 
 
-def get_placement_emoji(rank, athlete_name):
-    if athlete_name.lower().startswith('brede'):
-        return ':brede:'
+def get_placement_emoji(rank):
     # number emojis from https://www.flaticon.com/packs/numbers-0-to-100-108
     #  medal emojis from https://www.flaticon.com/packs/winning-8
     if rank > 30:
@@ -38,41 +36,32 @@ def format_message(athletes):
                 "type": "header",
                 "text": {
                     "type": "plain_text",
-                    "text": "Forrige ukes toppliste for Omegapoint Norge Løpeklubb :sonic-running:"
+                    "text": "Forrige ukes toppliste for Omegapoint løpeklubb :sonic-running:"
                 }
             }
         ]
     }
 
     if len(athletes) != 0:
-        for athlete in athletes:
-            placement = get_placement_emoji(athlete["rank"], athlete["athlete_name"])
-
-            longest_run = athlete["longest_run"]
-            distance = longest_run.split(" km")[0]
-            if float(distance) < 10.0:
-                longest_run = f'  {longest_run}'
+        for index, athlete in enumerate(athletes):
+            placement = get_placement_emoji(index + 1)
 
             activities_text = 'økter'
-            if athlete["number_of_runs"] == 1:
+            if athlete.num_activities == 1:
                 activities_text = 'økt'
-
-            athlete_names = athlete["athlete_name"].split()
-            last_name = athlete_names[-1]
-            short_athlete_name = ' '.join(athlete_names[:-1]) + f' {last_name[0]}.'
 
             section_athlete = {
                 "type": "section",
                 "fields": [
                     {
                         "type": "mrkdwn",
-                        "text": f'{placement} {short_athlete_name}: *{athlete["total_distance"]}* '
-                                f'({athlete["number_of_runs"]} {activities_text})'
+                        "text": f'{placement} {athlete.name}: *{athlete.get_total_distance()}* '
+                                f'({athlete.num_activities} {activities_text})'
                     },
                     {
                         "type": "mrkdwn",
-                        "text": f':runner: *{athlete["avg_pace"]}*\t:medal: *{longest_run}*'
-                                f'\t:mountain: *{athlete["total_elevation_gain"]}*'
+                        "text": f':runner: *{athlete.avg_pace_per_km()}*\t:medal: *{athlete.get_longest_activity()}*'
+                                f'\t:mountain: *{athlete.get_total_elevation_gain()}*'
                     }
                 ]
             }
