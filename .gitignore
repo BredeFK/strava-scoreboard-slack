@@ -147,4 +147,6 @@ __azurite_db*__.json
 .idea/dataSources/
 .idea/dataSources.local.xml
 
+tokens.txt
+athletes.json
 testFile.json
