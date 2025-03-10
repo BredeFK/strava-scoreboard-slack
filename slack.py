@@ -36,7 +36,7 @@ def format_message(athletes):
                 "type": "header",
                 "text": {
                     "type": "plain_text",
-                    "text": "Forrige ukes toppliste for Omegapoint løpeklubb :sonic-running:"
+                    "text": "Forrige ukes toppliste for Omegapoint Norge løpeklubb :sonic-running:"
                 }
             }
         ]

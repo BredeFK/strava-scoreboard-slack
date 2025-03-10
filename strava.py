@@ -1,6 +1,6 @@
+import json
 import os.path
 import time
-import json
 from datetime import datetime, timezone, timedelta
 
 import requests
@@ -89,6 +89,9 @@ def get_club_activities(token_file_name, client_id, client_secret, code, club_id
 
 def parse_club_activities(club_activities):
     athletes = {}
+
+    if club_activities is None or len(club_activities) == 0:
+        exit('No club activities found')
 
     for activity in club_activities:
         if activity['type'] == 'Run':
