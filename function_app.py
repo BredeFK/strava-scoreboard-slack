@@ -4,19 +4,21 @@ from datetime import datetime
 
 import azure.functions as func
 
-from discord import format_message, post_discord_message
-from strava import get_last_weeks_leaderboard
+import discord
+import strava
 
 app = func.FunctionApp()
 
 
 def start_bot(webhook_url):
-    username = os.environ["STRAVA_USERNAME"]
-    password = os.environ["STRAVA_PASSWORD"]
-    athletes = get_last_weeks_leaderboard(username, password)
-    # athletes = json.loads(open('testFile.json', 'r').read()) # For testing purposes :)
-    message = format_message(athletes)
-    post_discord_message(webhook_url, message)
+    athletes = strava.get_club_activities(os.environ["TOKEN_FILE_NAME"],
+                                          os.environ["CLIENT_ID"],
+                                          os.environ["CLIENT_SECRET"],
+                                          os.environ["CODE"],
+                                          os.environ["CLUB_ID"])
+
+    message = discord.format_message(athletes)
+    discord.post_discord_message(webhook_url, message)
 
     logging.info(f'Python timer trigger function executed. The leaderboard had {len(athletes)} athletes')
 

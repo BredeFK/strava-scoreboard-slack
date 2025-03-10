@@ -76,16 +76,16 @@ def format_message(athletes):
     }
 
     if len(athletes) != 0:
-        for athlete in athletes:
-            placement = get_placement_emoji(athlete["rank"])
+        for index, athlete in enumerate(athletes):
+            placement = get_placement_emoji(index + 1)
             activities_text = 'runs'
-            if athlete["number_of_runs"] == 1:
+            if athlete.num_activities == 1:
                 activities_text = 'run'
 
-            field_athlete["value"] += (f'{placement} {athlete["athlete_name"]}: **{athlete["total_distance"]}** '
-                                       f'({athlete["number_of_runs"]} {activities_text})\n\n')
-            field_avg_pace["value"] += f'{athlete["avg_pace"]}\n\n'
-            field_longest["value"] += f'{athlete["longest_run"]}\n\n'
+            field_athlete["value"] += (f'{placement} {athlete.name}: **{athlete.get_total_distance()}** '
+                                       f'({athlete.num_activities} {activities_text})\n\n')
+            field_avg_pace["value"] += f'{athlete.avg_pace_per_km()}\n\n'
+            field_longest["value"] += f'{athlete.get_longest_activity()}\n\n'
 
     payload['embeds'][0]['fields'].append(field_athlete)
     payload['embeds'][0]['fields'].append(field_avg_pace)
