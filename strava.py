@@ -1,4 +1,3 @@
-import json
 import os.path
 import time
 from datetime import datetime, timezone, timedelta
@@ -100,10 +99,6 @@ def get_activities(access_token, club_id, after_time):
 
 def parse_club_activities(club_activities):
     athletes = {}
-
-    if club_activities is None or len(club_activities) == 0:
-        exit('No club activities found')
-
     for activity in club_activities:
         if activity['type'] == 'Run':
             full_name = f"{activity['athlete']['firstname']} {activity['athlete']['lastname']}"
@@ -115,18 +110,7 @@ def parse_club_activities(club_activities):
 
             athletes[full_name].add_activity(activity['distance'], moving_time, elevation_gain)
 
+    if len(athletes) == 0:
+        exit('No club activities found')
+
     return sorted(athletes.values(), key=lambda a: a.total_distance, reverse=True)
-
-
-def save_athletes_to_file(athletes, filename="athletes.json"):
-    with open(filename, "w", encoding="utf-8") as f:
-        json.dump([athlete.__dict__ for athlete in athletes], f, indent=4)
-
-
-def load_athletes_from_file(filename="athletes.json"):
-    try:
-        with open(filename, "r", encoding="utf-8") as f:
-            data = json.load(f)
-            return [Athlete(**athlete_data) for athlete_data in data]
-    except (FileNotFoundError, json.JSONDecodeError):
-        return []
