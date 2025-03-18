@@ -64,27 +64,38 @@ def update_token_file_and_return_access_token(json_body, token_file_name):
     return access_token
 
 
-def get_last_monday_unix():
+def get_last_monday_and_sunday():
     now = datetime.now(timezone.utc)
-    last_monday = now - timedelta(days=(now.weekday() + 7) % 7)
-    last_monday = last_monday.replace(hour=0, minute=0, second=0, microsecond=0)
-    return int(last_monday.timestamp())
+
+    last_monday = now - timedelta(days=now.weekday() + 7)
+    last_sunday = last_monday + timedelta(days=6)
+    return (last_monday.replace(hour=0, minute=0, second=0, microsecond=0),
+            last_sunday.replace(hour=23, minute=59, second=59, microsecond=999999))
 
 
 def get_club_activities(token_file_name, client_id, client_secret, code, club_id):
     access_token = get_access_token(token_file_name, client_id, client_secret, code)
-    after_time = get_last_monday_unix()
+    last_monday, last_sunday = get_last_monday_and_sunday()
+    after_monday_activities = get_activities(access_token, club_id, last_monday)
+    after_sunday_activities = get_activities(access_token, club_id, last_sunday)
 
+    last_weeks_activities = [activity for activity in after_monday_activities if
+                             activity not in after_sunday_activities]
+
+    return parse_club_activities(last_weeks_activities)
+
+
+def get_activities(access_token, club_id, after_time):
+    timestamp = int(after_time.timestamp())
+    print(f'Getting activities after {after_time}: In UNIX: {timestamp}')
     club_activities_request = requests.get(
-        url=f'https://www.strava.com/api/v3/clubs/{club_id}/activities?per_page=100&after={after_time}',
+        url=f'https://www.strava.com/api/v3/clubs/{club_id}/activities?per_page=100&after={timestamp}',
         headers={'Authorization': f'Bearer {access_token}'})
-
     if club_activities_request.status_code == 200:
-        return parse_club_activities(club_activities_request.json())
+        return club_activities_request.json()
     else:
         error = club_activities_request.json()
-        print(f'Something went wrong: {club_activities_request.status_code}: {error}')
-        return None
+        exit(f'Something went wrong: {club_activities_request.status_code}: {error}')
 
 
 def parse_club_activities(club_activities):
