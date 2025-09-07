@@ -36,7 +36,7 @@ def format_message(athletes):
                 "type": "header",
                 "text": {
                     "type": "plain_text",
-                    "text": "Forrige ukes toppliste for Omegapoint Norge løpeklubb :sonic-running:"
+                    "text": "Forrige ukes toppliste for Iterun :sonic-running:"
                 }
             }
         ]
@@ -73,7 +73,7 @@ def format_message(athletes):
             {
                 "type": "mrkdwn",
                 "text": ":runner: Snittfart\t:medal: Lengste tur\t:mountain: Høydemeter"
-                        "\n<https://www.strava.com/clubs/526085|Bli med i løpegruppa>"
+                        "\n<https://www.strava.com/clubs/iterun|Bli med i løpegruppa>"
             }
         ]
     }

@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-    <component name="Black">
-        <option name="sdkName" value="Python 3.11 (strava-scoreboard-slack)"/>
-    </component>
-    <component name="ComposerSettings">
-        <execution/>
-    </component>
-    <component name="ProjectRootManager" version="2" languageLevel="JDK_21" default="true"
-               project-jdk-name="Python 3.11 (strava-scoreboard-slack)" project-jdk-type="Python SDK">
-        <output url="file://$PROJECT_DIR$/out"/>
-    </component>
+  <component name="Black">
+    <option name="sdkName" value="Python 3.11 (strava-scoreboard-slack)" />
+  </component>
+  <component name="ComposerSettings">
+    <execution />
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_21" default="true" project-jdk-name="Python 3.13" project-jdk-type="Python SDK">
+    <output url="file://$PROJECT_DIR$/out" />
+  </component>
 </project>
