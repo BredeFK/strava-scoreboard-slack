@@ -14,14 +14,15 @@ def post_last_weeks_leaderboard() -> None:
     print(f'Posting last weeks leaderboard @ {datetime.now()}')
 
     url = os.environ["WEBHOOK_URL"]
+    club_id = os.environ["CLUB_ID"]
     athletes = strava.get_club_activities(os.environ["CLIENT_ID"],
                                           os.environ["CLIENT_SECRET"],
                                           os.environ["REFRESH_TOKEN"],
-                                          os.environ["CLUB_ID"])
+                                          club_id)
 
-    message = slack.format_message(athletes)
-    #slack.post_slack_message(url, message)
-    print(message)
+    message = slack.format_message(athletes, club_id)
+    slack.post_slack_message(url, message)
+    # print(message)
 
     print(f'Function executed -> The leaderboard had {len(athletes)} athletes')
 

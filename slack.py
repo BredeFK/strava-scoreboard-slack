@@ -29,14 +29,14 @@ def get_placement_emoji(rank):
             return f':number-{rank}:'
 
 
-def format_message(athletes):
+def format_message(athletes, club_id):
     blocks = {
         "blocks": [
             {
                 "type": "header",
                 "text": {
                     "type": "plain_text",
-                    "text": "Forrige ukes toppliste for Iterun :sonic-running:"
+                    "text": ":organism:Forrige ukes toppliste for Iterun:sonic_running:"
                 }
             }
         ]
@@ -73,7 +73,7 @@ def format_message(athletes):
             {
                 "type": "mrkdwn",
                 "text": ":runner: Snittfart\t:medal: Lengste tur\t:mountain: Høydemeter"
-                        "\n<https://www.strava.com/clubs/iterun|Bli med i løpegruppa>"
+                        f"\n<https://www.strava.com/clubs/{club_id}|Bli med i løpegruppa>"
             }
         ]
     }
