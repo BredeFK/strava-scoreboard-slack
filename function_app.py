@@ -20,13 +20,13 @@ def monday_timer_trigger(myTimer: func.TimerRequest) -> None:
         logging.info(f'The timer is on time @ {time_now}')
 
     url = os.environ["WEBHOOK_URL"]
-    athletes = strava.get_club_activities(os.environ["TOKEN_FILE_NAME"],
-                                          os.environ["CLIENT_ID"],
+    club_id = os.environ["CLUB_ID"]
+    athletes = strava.get_club_activities(os.environ["CLIENT_ID"],
                                           os.environ["CLIENT_SECRET"],
-                                          os.environ["CODE"],
-                                          os.environ["CLUB_ID"])
+                                          os.environ["REFRESH_TOKEN"],
+                                          club_id)
 
-    message = slack.format_message(athletes)
+    message = slack.format_message(athletes, club_id)
     slack.post_slack_message(url, message)
 
     logging.info(f'Python Monday timer trigger function executed. The leaderboard had {len(athletes)} athletes')
@@ -44,15 +44,15 @@ def force_monday_timer_trigger(req: func.HttpRequest) -> func.HttpResponse:
         logging.info(f'Python HTTP trigger function processed a request @ {time_now}')
         url = os.environ["WEBHOOK_URL"]
 
-    athletes = strava.get_club_activities(os.environ["TOKEN_FILE_NAME"],
-                                          os.environ["CLIENT_ID"],
+    club_id = os.environ["CLUB_ID"]
+    athletes = strava.get_club_activities(os.environ["CLIENT_ID"],
                                           os.environ["CLIENT_SECRET"],
-                                          os.environ["CODE"],
-                                          os.environ["CLUB_ID"])
+                                          os.environ["REFRESH_TOKEN"],
+                                          club_id)
 
     logging.info(f'Python manual trigger function executed. The leaderboard has {len(athletes)} athletes')
 
-    message = slack.format_message(athletes)
+    message = slack.format_message(athletes, club_id)
     slack.post_slack_message(url, message)
 
     return func.HttpResponse(f'Python timer trigger function executed @ {time_now}')
