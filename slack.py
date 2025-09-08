@@ -1,3 +1,4 @@
+from datetime import datetime
 import json
 
 import requests
@@ -42,6 +43,7 @@ def format_message(athletes, club_id):
         ]
     }
 
+    mountain_emoji = get_mountain_emoji()
     if len(athletes) != 0:
         for index, athlete in enumerate(athletes):
             placement = get_placement_emoji(index + 1)
@@ -61,7 +63,7 @@ def format_message(athletes, club_id):
                     {
                         "type": "mrkdwn",
                         "text": f':runner: *{athlete.avg_pace_per_km()}*\t:medal: *{athlete.get_longest_activity()}*'
-                                f'\t:mountain: *{athlete.get_total_elevation_gain()}*'
+                                f'\t{mountain_emoji} *{athlete.get_total_elevation_gain()}*'
                     }
                 ]
             }
@@ -72,10 +74,21 @@ def format_message(athletes, club_id):
         "elements": [
             {
                 "type": "mrkdwn",
-                "text": ":runner: Snittfart\t:medal: Lengste tur\t:mountain: Høydemeter"
+                "text": f":runner: Snittfart\t:medal: Lengste tur\t{mountain_emoji} Høydemeter"
                         f"\n<https://www.strava.com/clubs/{club_id}|Bli med i løpegruppa>"
             }
         ]
     }
     blocks['blocks'].append(section_join_the_group)
     return blocks
+
+
+def get_mountain_emoji():
+    today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    first_day_of_winter = datetime(year=today.year, month=10, day=14, hour=0, minute=0, second=0)
+    first_day_of_summer = datetime(year=today.year, month=4, day=14, hour=0, minute=0, second=0)
+
+    if first_day_of_summer <= today < first_day_of_winter:
+        return ':mountain:'
+    else:
+        return ':snow_capped_mountain:'

@@ -1,5 +1,3 @@
-import os.path
-import time
 from datetime import datetime, timezone, timedelta
 
 import requests
@@ -10,7 +8,7 @@ BASE_URL = 'https://www.strava.com'
 
 
 def get_access_token(client_id, client_secret, refresh_token):
-    print('AccessToken has expired')
+    print('Fetching access_token using refresh_token')
     refresh_token_request = requests.post(url=f'{BASE_URL}/api/v3/oauth/token',
                                           params={'client_id': client_id,
                                                   'client_secret': client_secret,
