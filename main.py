@@ -1,5 +1,6 @@
 ### Use this file to run locally :) ###
 import os
+import sys
 from datetime import datetime
 
 from dotenv import load_dotenv
@@ -9,8 +10,10 @@ import strava
 
 load_dotenv()
 
+flags = ["--print", "-p"]
 
-def post_last_weeks_leaderboard() -> None:
+
+def post_last_weeks_leaderboard(only_print: bool) -> None:
     print(f'Posting last weeks leaderboard @ {datetime.now()}')
 
     url = os.environ["WEBHOOK_URL"]
@@ -21,10 +24,17 @@ def post_last_weeks_leaderboard() -> None:
                                           club_id)
 
     message = slack.format_message(athletes, club_id)
-    slack.post_slack_message(url, message)
-    # print(message)
+    if only_print:
+        print(message)
+    else:
+        slack.post_slack_message(url, message)
 
-    print(f'Function executed -> The leaderboard had {len(athletes)} athletes')
+    print(f'\nFunction executed -> The leaderboard had '
+          f'{len(athletes)} athletes -> {", ".join(a.name for a in athletes)}')
 
 
-post_last_weeks_leaderboard()
+options = False
+if len(sys.argv) > 1 and sys.argv[1] in flags:
+    options = True
+
+post_last_weeks_leaderboard(options)
