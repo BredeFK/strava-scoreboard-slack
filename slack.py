@@ -37,13 +37,14 @@ def format_message(athletes, club_id):
                 "type": "header",
                 "text": {
                     "type": "plain_text",
-                    "text": ":organism:Forrige ukes toppliste for Iterun:sonic_running:"
+                    "text": ":organism:Forrige ukes toppliste for Iterun :sonic_running:"
                 }
             }
         ]
     }
 
     mountain_emoji = get_mountain_emoji()
+    section = None
     if len(athletes) != 0:
         for index, athlete in enumerate(athletes):
             placement = get_placement_emoji(index + 1)
@@ -52,7 +53,7 @@ def format_message(athletes, club_id):
             if athlete.num_activities == 1:
                 activities_text = 'økt'
 
-            section_athlete = {
+            section = {
                 "type": "section",
                 "fields": [
                     {
@@ -67,7 +68,14 @@ def format_message(athletes, club_id):
                     }
                 ]
             }
-            blocks['blocks'].append(section_athlete)
+    else:
+        section = {
+            "type": "section",
+            "text": {
+                "type": "mrkdwn",
+                "text": "Det var ingen som løp forrige uke :usmil:"
+            }
+        }
 
     section_join_the_group = {
         "type": "context",
@@ -79,6 +87,8 @@ def format_message(athletes, club_id):
             }
         ]
     }
+
+    blocks['blocks'].append(section)
     blocks['blocks'].append(section_join_the_group)
     return blocks
 
