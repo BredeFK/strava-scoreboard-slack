@@ -72,6 +72,7 @@ def parse_club_activities(club_activities):
             athletes[full_name].add_activity(activity['distance'], moving_time, elevation_gain)
 
     if len(athletes) == 0:
-        exit('No club activities found')
+        print('No club activities found')
+        return []
 
     return sorted(athletes.values(), key=lambda a: a.total_distance, reverse=True)
