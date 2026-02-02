@@ -68,6 +68,7 @@ def format_message(athletes, club_id):
                     }
                 ]
             }
+            blocks['blocks'].append(section)
     else:
         section = {
             "type": "section",
@@ -76,6 +77,7 @@ def format_message(athletes, club_id):
                 "text": "Det var ingen som løp forrige uke :usmil:"
             }
         }
+        blocks['blocks'].append(section)
 
     section_join_the_group = {
         "type": "context",
@@ -88,7 +90,6 @@ def format_message(athletes, club_id):
         ]
     }
 
-    blocks['blocks'].append(section)
     blocks['blocks'].append(section_join_the_group)
     return blocks
 
