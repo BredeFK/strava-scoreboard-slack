@@ -40,10 +40,22 @@ class StravaSettings(BaseModel):
     refresh_token: str
 
 
+class DatabaseSettings(BaseModel):
+    ssh_hostname: str
+    pa_username: str
+    pa_password: str
+    pa_hostname: str
+    db_username: str
+    db_password: str
+    db_host: str
+    db_name: str
+
+
 class Settings(BaseModel):
     only_print: bool
     slack_url: str
     strava: StravaSettings
+    database: DatabaseSettings
 
 
 def parse_club_activities(club_activities: List[Any], date_from: datetime, date_to: datetime) -> List[Athlete]:
