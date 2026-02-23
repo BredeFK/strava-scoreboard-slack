@@ -1,7 +1,10 @@
 from datetime import datetime
 import json
+from typing import Dict, List
 
 import requests
+
+from classes import ScoreboardAthlete
 
 
 def post_slack_message(webhook_url, formatted_message):
@@ -30,23 +33,61 @@ def get_placement_emoji(rank):
             return f':number-{rank}:'
 
 
-def format_message(athletes, club_id):
+def format_message(scoreboards: Dict[str, List[ScoreboardAthlete]], week_number: int, club_id: str) -> dict:
     blocks = {
         "blocks": [
             {
                 "type": "header",
                 "text": {
                     "type": "plain_text",
-                    "text": ":organism:Forrige ukes toppliste for Iterun :sonic_running:"
+                    "text": f"Uke {week_number}: Toppliste for Iterate Strava Gruppe :organism:"
                 }
             }
         ]
     }
 
     mountain_emoji = get_mountain_emoji()
-    section = None
-    if len(athletes) != 0:
-        for index, athlete in enumerate(athletes):
+    if all(len(board) == 0 for board in scoreboards.values()):
+        blocks['blocks'].append({
+            "type": "section",
+            "text": {
+                "type": "mrkdwn",
+                "text": "Det var ingen aktiviteter forrige uke :usmil:"
+            }
+        })
+    else:
+        for scoreboard_key, scoreboards in scoreboards.items():
+            sections = _build_list(scoreboard_key, scoreboards, mountain_emoji)
+            for section in sections:
+                blocks['blocks'].append(section)
+
+    section_join_the_group = {
+        "type": "context",
+        "elements": [
+            {
+                "type": "mrkdwn",
+                "text": f":runner: Snittfart\t:medal: Lengste tur\t{mountain_emoji} Høydemeter"
+                        f"\n<https://www.strava.com/clubs/{club_id}|Bli med i stravagruppa>"
+            }
+        ]
+    }
+
+    blocks['blocks'].append(section_join_the_group)
+    return blocks
+
+
+def _build_list(activity_type: str, scoreboard: List[ScoreboardAthlete], mountain_emoji: str):
+    sections = []
+    config = _get_activity_config(activity_type)
+    if len(scoreboard) != 0:
+        sections.append({
+            "type": "section",
+            "text": {
+                "type": "mrkdwn",
+                "text": config['title']
+            }
+        })
+        for index, athlete in enumerate(scoreboard):
             placement = get_placement_emoji(index + 1)
 
             activities_text = 'økter'
@@ -58,43 +99,52 @@ def format_message(athletes, club_id):
                 "fields": [
                     {
                         "type": "mrkdwn",
-                        "text": f'{placement} {athlete.name}: *{athlete.get_total_distance()}* '
+                        "text": f'{placement} {athlete.name}: *{athlete.total_distance}* '
                                 f'({athlete.num_activities} {activities_text})'
                     },
                     {
                         "type": "mrkdwn",
-                        "text": f':runner: *{athlete.avg_pace_per_km()}*\t:medal: *{athlete.get_longest_activity()}*'
-                                f'\t{mountain_emoji} *{athlete.get_total_elevation_gain()}*'
+                        "text": f'{config['pace_emoji']} *{athlete.avg_pace_per_km}*\t:medal: *{athlete.longest_activity}*'
+                                f'\t{mountain_emoji} *{athlete.total_elevation_gain}*'
                     }
                 ]
             }
-            blocks['blocks'].append(section)
-    else:
-        section = {
+            sections.append(section)
+    elif len(scoreboard) == 0 and activity_type == 'Run':
+        sections.append({
             "type": "section",
             "text": {
                 "type": "mrkdwn",
-                "text": "Det var ingen som løp forrige uke :usmil:"
+                "text": config['title']
             }
-        }
-        blocks['blocks'].append(section)
-
-    section_join_the_group = {
-        "type": "context",
-        "elements": [
-            {
+        })
+        sections.append({
+            "type": "section",
+            "text": {
                 "type": "mrkdwn",
-                "text": f":runner: Snittfart\t:medal: Lengste tur\t{mountain_emoji} Høydemeter"
-                        f"\n<https://www.strava.com/clubs/{club_id}|Bli med i løpegruppa>"
+                "text": config['empty']
             }
-        ]
-    }
-
-    blocks['blocks'].append(section_join_the_group)
-    return blocks
+        })
+    return sections
 
 
-def get_mountain_emoji():
+def _get_activity_config(activity_type: str):
+    config = {}
+    if activity_type == 'Run':
+        config = {
+            "title": "*Løpelista* :sunny:",
+            "pace_emoji": ":runner:",
+            "empty": "Ingen som løp forrige uke :usmil:"
+        }
+    elif activity_type == 'NordicSki':
+        config = {
+            "title": "*Skilista* :snowflake:",
+            "pace_emoji": ":skier:"
+        }
+    return config
+
+
+def get_mountain_emoji() -> str:
     today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
     first_day_of_winter = datetime(year=today.year, month=10, day=14, hour=0, minute=0, second=0)
     first_day_of_summer = datetime(year=today.year, month=4, day=14, hour=0, minute=0, second=0)
