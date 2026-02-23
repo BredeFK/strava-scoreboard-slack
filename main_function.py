@@ -19,7 +19,5 @@ def post_last_weeks_leaderboard(settings: Settings) -> None:
         print(json.dumps(message))
     else:
         slack.post_slack_message(settings.slack_url, message)
-    print(
-        f'\nFunction executed -> The leaderboard had ' f'{len(athletes)} athletes -> '
-        f'{", ".join(f'{athlete.firstname} {athlete.lastname}' for athlete in athletes)}'
-    )
+    athlete_names = ", ".join(f"{athlete.firstname} {athlete.lastname}" for athlete in athletes)
+    print(f"\nFunction executed -> The leaderboard had {len(athletes)} athletes -> {athlete_names}")

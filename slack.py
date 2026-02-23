@@ -104,8 +104,8 @@ def _build_list(activity_type: str, scoreboard: List[ScoreboardAthlete], mountai
                     },
                     {
                         "type": "mrkdwn",
-                        "text": f'{config['pace_emoji']} *{athlete.avg_pace_per_km}*\t:medal: *{athlete.longest_activity}*'
-                                f'\t{mountain_emoji} *{athlete.total_elevation_gain}*'
+                        "text": f"{config['pace_emoji']} *{athlete.avg_pace_per_km}*\t:medal: *{athlete.longest_activity}*"
+                                f"\t{mountain_emoji} *{athlete.total_elevation_gain}*"
                     }
                 ]
             }

@@ -1,14 +1,9 @@
+from __future__ import annotations
+
 from datetime import datetime, date
 from typing import List, Any, Dict
 
 from pydantic import BaseModel
-
-
-class Athlete(BaseModel):
-    id: str
-    firstname: str
-    lastname: str
-    activities: List[Activity]
 
 
 class Activity(BaseModel):
@@ -21,6 +16,13 @@ class Activity(BaseModel):
     date_to: date
 
 
+class Athlete(BaseModel):
+    id: str
+    firstname: str
+    lastname: str
+    activities: List[Activity]
+
+
 class ScoreboardAthlete(BaseModel):
     name: str
     total_distance: str
@@ -31,17 +33,17 @@ class ScoreboardAthlete(BaseModel):
     avg_pace_per_km: str
 
 
-class Settings(BaseModel):
-    only_print: bool
-    slack_url: str
-    strava: StravaSettings
-
-
 class StravaSettings(BaseModel):
     club_id: str
     client_id: str
     client_secret: str
     refresh_token: str
+
+
+class Settings(BaseModel):
+    only_print: bool
+    slack_url: str
+    strava: StravaSettings
 
 
 def parse_club_activities(club_activities: List[Any], date_from: datetime, date_to: datetime) -> List[Athlete]:
