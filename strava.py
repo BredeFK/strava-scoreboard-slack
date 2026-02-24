@@ -96,7 +96,6 @@ def _parse_club_activities(club_activities: List[Any], date_from: datetime, date
             type=activity_type,
             total_distance=distance,
             total_moving_time=moving_time,
-            longest_activity=distance,
             total_elevation_gain=elevation_gain,
             date_from=date_from.date(),
             date_to=date_to.date()
