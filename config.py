@@ -20,6 +20,7 @@ def get_settings(dotenv_file: str = '.env') -> Settings:
     if _settings is None:
         load_dotenv(dotenv_file)
         _settings = Settings(
+            is_production=os.getenv("IS_PRODUCTION", False),
             only_print=os.getenv("ONLY_PRINT", True),
             slack_url=_require_env("SLACK_WEBHOOK_URL"),
             strava=StravaSettings(

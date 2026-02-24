@@ -10,7 +10,6 @@ class Activity(BaseModel):
     type: str
     total_distance: float
     total_moving_time: float
-    longest_activity: float
     total_elevation_gain: float
     date_from: date
     date_to: date
@@ -52,6 +51,7 @@ class DatabaseSettings(BaseModel):
 
 
 class Settings(BaseModel):
+    is_production: bool
     only_print: bool
     slack_url: str
     strava: StravaSettings
@@ -86,7 +86,6 @@ def parse_club_activities(club_activities: List[Any], date_from: datetime, date_
             type=activity_type,
             total_distance=distance,
             total_moving_time=moving_time,
-            longest_activity=distance,
             total_elevation_gain=elevation_gain,
             date_from=date_from.date(),
             date_to=date_to.date()
