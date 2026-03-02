@@ -47,6 +47,11 @@ def _athlete_rows(athletes: Sequence[Athlete]) -> Iterable[Tuple[str, str, str]]
         yield athlete.id, athlete.firstname, athlete.lastname
 
 
+def _athlete_club_rows(athletes: Sequence[Athlete], club_id: str) -> Iterable[Tuple[str, str]]:
+    for athlete in athletes:
+        yield athlete.id, club_id
+
+
 def _activity_rows(
         athletes: Sequence[Athlete],
 ) -> Iterable[Tuple[str, str, float, float, float, object, object]]:
@@ -72,6 +77,7 @@ def _insert_athletes_and_activities(
         settings: DatabaseSettings,
         local_port: int,
         athletes: Sequence[Athlete],
+        club_id: str
 ) -> None:
     if not athletes:
         return
@@ -92,6 +98,14 @@ def _insert_athletes_and_activities(
                 VALUES (%s, %s, %s)
                 """,
                 list(_athlete_rows(athletes)),
+            )
+
+            cursor.executemany(
+                """
+                INSERT IGNORE INTO ATHLETE_CLUBS (athlete_id, club_id)
+                VALUES (%s, %s)
+                """,
+                list(_athlete_club_rows(athletes, club_id)),
             )
 
             cursor.executemany(
@@ -121,5 +135,5 @@ async def _run_with_tunnel(settings: DatabaseSettings, func, *args) -> None:
         await asyncio.to_thread(func, settings, local_port, *args)
 
 
-def insert_athletes(settings: DatabaseSettings, athletes: Sequence[Athlete]) -> None:
-    asyncio.run(_run_with_tunnel(settings, _insert_athletes_and_activities, athletes))
+def insert_athletes(settings: DatabaseSettings, club_id: str, athletes: Sequence[Athlete]) -> None:
+    asyncio.run(_run_with_tunnel(settings, _insert_athletes_and_activities, athletes, club_id))

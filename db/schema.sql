@@ -27,3 +27,29 @@ CREATE TABLE IF NOT EXISTS ACTIVITIES
             ON DELETE CASCADE
             ON UPDATE CASCADE
 );
+
+
+CREATE TABLE IF NOT EXISTS CLUBS
+(
+    id   VARCHAR(128) NOT NULL,
+    name VARCHAR(128) NOT NULL,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS ATHLETE_CLUBS
+(
+    athlete_id VARCHAR(128) NOT NULL,
+    club_id    VARCHAR(128) NOT NULL,
+    PRIMARY KEY (athlete_id, club_id),
+    KEY idx_athlete_clubs_club_id (club_id),
+    CONSTRAINT fk_athlete_clubs_athlete
+        FOREIGN KEY (athlete_id)
+            REFERENCES ATHLETES (id)
+            ON DELETE CASCADE
+            ON UPDATE CASCADE,
+    CONSTRAINT fk_athlete_clubs_club
+        FOREIGN KEY (club_id)
+            REFERENCES CLUBS (id)
+            ON DELETE CASCADE
+            ON UPDATE CASCADE
+);

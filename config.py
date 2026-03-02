@@ -23,6 +23,7 @@ def get_settings(dotenv_file: str = '.env') -> Settings:
             is_production=os.getenv("IS_PRODUCTION", False),
             only_print=os.getenv("ONLY_PRINT", True),
             slack_url=_require_env("SLACK_WEBHOOK_URL"),
+            discord_url=os.getenv("DISCORD_WEBHOOK_URL", None),
             strava=StravaSettings(
                 club_id=_require_env("STRAVA_CLUB_ID"),
                 client_id=_require_env("STRAVA_CLIENT_ID"),

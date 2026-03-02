@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime, date
-from typing import List, Any, Dict
+from typing import List, Any, Dict, Optional
 
 from pydantic import BaseModel
 
@@ -54,6 +54,7 @@ class Settings(BaseModel):
     is_production: bool
     only_print: bool
     slack_url: str
+    discord_url: Optional[str] = None
     strava: StravaSettings
     database: DatabaseSettings
 

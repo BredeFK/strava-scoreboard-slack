@@ -18,7 +18,7 @@ def _post_last_weeks_leaderboard(settings: Settings) -> None:
     athletes = strava.get_club_athletes(settings.strava, ACTIVITY_TYPES)
 
     try:
-        insert_athletes(settings.database, athletes)
+        insert_athletes(settings.database, settings.strava.club_id, athletes)
     except Exception as ex:
         print(f'Failed to add athletes to database: {ex}')
     scoreboards = strava.parse_scoreboard_list(athletes, ACTIVITY_TYPES)
@@ -26,7 +26,7 @@ def _post_last_weeks_leaderboard(settings: Settings) -> None:
     if settings.only_print:
         print(json.dumps(message))
     else:
-        slack.post_slack_message(settings.slack_url, message)
+        slack.post_message(settings.slack_url, message)
     athlete_names = ", ".join(f"{athlete.firstname} {athlete.lastname}" for athlete in athletes)
     print(f"\nFunction executed -> The leaderboard had {len(athletes)} athletes -> {athlete_names}")
 

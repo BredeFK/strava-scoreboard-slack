@@ -7,7 +7,7 @@ import requests
 from classes import ScoreboardAthlete
 
 
-def post_slack_message(webhook_url, formatted_message):
+def post_message(webhook_url: str, formatted_message: dict):
     slack_request = requests.post(url=webhook_url, headers={'Content-type': 'application/json'},
                                   data=json.dumps(formatted_message))
 
@@ -17,7 +17,7 @@ def post_slack_message(webhook_url, formatted_message):
         print(f'Error[{slack_request.status_code}] sending slack message: {slack_request.text}')
 
 
-def get_placement_emoji(rank):
+def _get_placement_emoji(rank: int):
     # number emojis from https://www.flaticon.com/packs/numbers-0-to-100-108
     #  medal emojis from https://www.flaticon.com/packs/winning-8
     if rank > 30:
@@ -46,7 +46,7 @@ def format_message(scoreboards: Dict[str, List[ScoreboardAthlete]], week_number:
         ]
     }
 
-    mountain_emoji = get_mountain_emoji()
+    mountain_emoji = _get_mountain_emoji()
     if all(len(board) == 0 for board in scoreboards.values()):
         blocks['blocks'].append({
             "type": "section",
@@ -88,7 +88,7 @@ def _build_list(activity_type: str, scoreboard: List[ScoreboardAthlete], mountai
             }
         })
         for index, athlete in enumerate(scoreboard):
-            placement = get_placement_emoji(index + 1)
+            placement = _get_placement_emoji(index + 1)
 
             activities_text = 'økter'
             if athlete.num_activities == 1:
@@ -144,7 +144,7 @@ def _get_activity_config(activity_type: str):
     return config
 
 
-def get_mountain_emoji() -> str:
+def _get_mountain_emoji() -> str:
     today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
     first_day_of_winter = datetime(year=today.year, month=10, day=14, hour=0, minute=0, second=0)
     first_day_of_summer = datetime(year=today.year, month=4, day=14, hour=0, minute=0, second=0)
