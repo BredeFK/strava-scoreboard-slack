@@ -129,7 +129,6 @@ def _build_list(activity_type: str, scoreboard: List[ScoreboardAthlete], mountai
 
 
 def _get_activity_config(activity_type: str):
-    config = {}
     if activity_type == 'Run':
         config = {
             "title": "*Løpelista* :sunny:",
@@ -140,6 +139,16 @@ def _get_activity_config(activity_type: str):
         config = {
             "title": "*Skilista* :snowflake:",
             "pace_emoji": ":skier:"
+        }
+    elif activity_type == 'AlpineSki':
+        config = {
+            "title": "*Slalåmlista* :ski:",
+            "pace_emoji": ":snowboarder:"
+        }
+    else:
+        config = {
+            "title": "*Ukjent aktivitet* :question:",
+            "pace_emoji": ":runner:",
         }
     return config
 
