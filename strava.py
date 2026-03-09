@@ -166,21 +166,17 @@ def parse_scoreboard_list(athletes: List[Athlete], activity_types: List[str]) ->
                 entry['total_distance'],
                 entry['total_moving_time']
             )
-        scoreboard_list[activity_type] = sorted(
-            [
-                ScoreboardAthlete(
-                    name=entry['name'],
-                    total_distance=_distance_to_km(entry['total_distance']),
-                    num_activities=entry['num_activities'],
-                    total_moving_time=entry['total_moving_time'],
-                    longest_activity=_distance_to_km(entry['longest_activity']),
-                    total_elevation_gain=_get_total_elevation_gain(entry['total_elevation_gain']),
-                    avg_pace_per_km=entry['avg_pace_per_km']
-                )
-                for entry in athlete_map.values()
-            ],
-            key=lambda athlete_entry: athlete_entry.total_distance,
-            reverse=True
-        )
+        scoreboard_list[activity_type] = [
+            ScoreboardAthlete(
+                name=entry['name'],
+                total_distance=_distance_to_km(entry['total_distance']),
+                num_activities=entry['num_activities'],
+                total_moving_time=entry['total_moving_time'],
+                longest_activity=_distance_to_km(entry['longest_activity']),
+                total_elevation_gain=_get_total_elevation_gain(entry['total_elevation_gain']),
+                avg_pace_per_km=entry['avg_pace_per_km']
+            )
+            for entry in sorted(athlete_map.values(), key=lambda e: e['total_distance'], reverse=True)
+        ]
 
     return scoreboard_list
