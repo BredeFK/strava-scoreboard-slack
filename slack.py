@@ -1,6 +1,6 @@
-from datetime import datetime
+from datetime import datetime, date
 import json
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 import requests
 
@@ -33,14 +33,19 @@ def _get_placement_emoji(rank: int):
             return f':number-{rank}:'
 
 
-def format_message(scoreboards: Dict[str, List[ScoreboardAthlete]], week_number: int, club_id: str) -> dict:
+def format_message(scoreboards: Dict[str, List[ScoreboardAthlete]], week_number: int, club_id: str,
+                   earliest: Optional[date] = None, latest: Optional[date] = None) -> dict:
+    if earliest and latest:
+        header = f":bananadance: Alle aktiviteter fra {earliest.strftime('%d/%m/%y')} til {latest.strftime('%d/%m/%y')} :bananadance:"
+    else:
+        header = f"Uke {week_number}: Toppliste for Iterate Strava Gruppe :organism:"
     blocks = {
         "blocks": [
             {
                 "type": "header",
                 "text": {
                     "type": "plain_text",
-                    "text": f"Uke {week_number}: Toppliste for Iterate Strava Gruppe :organism:"
+                    "text": header
                 }
             }
         ]
